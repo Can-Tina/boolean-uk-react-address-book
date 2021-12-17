@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ContactsList from "./components/ContactsList";
 import CreateContactForm from "./components/CreateContactForm";
 import "./styles/styles.css";
@@ -6,8 +6,21 @@ import "./styles/styles.css";
 export default function App() {
   const [contacts, setContacts] = useState([]);
   const [hideForm, setHideForm] = useState(true);
+  const [newContactSubmitted, setNewContactSubmitted] = useState(true)
 
-  // [TODO] Write a useEffect to fetch contacts here...
+  const fetchData = async() => {
+    const result = await fetch("http://localhost:3000/contacts")
+    const data = await result.json()
+    setContacts(data)
+  }
+
+  useEffect(() => {
+    if(newContactSubmitted) {
+      setNewContactSubmitted(false)
+      fetchData()
+    }
+  }, [newContactSubmitted])
+  console.log("contacts", contacts)
 
   return (
     <>
@@ -16,7 +29,13 @@ export default function App() {
         hideForm={hideForm}
         setHideForm={setHideForm}
       />
-      <main>{!hideForm && <CreateContactForm />}</main>
+      <main>
+        {!hideForm && <CreateContactForm
+          setNewContactSubmitted={setNewContactSubmitted}
+          contacts={contacts}
+          setContacts={setContacts}
+        />
+      }</main>
     </>
   );
 }
