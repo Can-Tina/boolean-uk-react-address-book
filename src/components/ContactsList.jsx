@@ -1,29 +1,37 @@
 function ContactsList(props) {
-  const { contacts, hideForm, setHideForm } = props;
+  const { contacts, hideForm, setHideForm, setSelectedContact } = props;
 
   return (
     <aside className="contacts-section light-shadow">
       <header>
         <h2>Contacts</h2>
         <button
-          onClick={() => setHideForm(!hideForm)}
+          onClick={() => {
+            setHideForm(!hideForm)
+            setSelectedContact(null)
+          }}
           className="button new-contact-btn"
         >
           {hideForm ? "Create" : "Cancel"}
         </button>
       </header>
-      <ul>
+      <ul className="contacts-list">
         {contacts.map((contact, index) => {
-          const { firstName, lastName, address } = contact;
 
           return (
             <li key={index}>
               <h3>
-                {firstName} {lastName}
+                {contact.firstName} {contact.lastName}
               </h3>
-              <p>
-                {address.street}, {address.postCode}
-              </p>
+              <button
+                onClick={() => {
+                    setHideForm(true)
+                    setSelectedContact(contact)
+                }}
+                className="button"
+              >
+                View
+              </button>
             </li>
           );
         })}

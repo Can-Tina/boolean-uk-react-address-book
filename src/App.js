@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import ContactsList from "./components/ContactsList";
 import CreateContactForm from "./components/CreateContactForm";
+import ViewSelectedContact from "./components/SelectedContact";
 import "./styles/styles.css";
 
 export default function App() {
   const [contacts, setContacts] = useState([]);
   const [hideForm, setHideForm] = useState(true);
   const [newContactSubmitted, setNewContactSubmitted] = useState(true)
+  const [selectedContact, setSelectedContact] = useState(null)
 
   const fetchData = async() => {
     const result = await fetch("http://localhost:3000/contacts")
@@ -20,6 +22,7 @@ export default function App() {
       fetchData()
     }
   }, [newContactSubmitted])
+  
   console.log("contacts", contacts)
 
   return (
@@ -28,14 +31,19 @@ export default function App() {
         contacts={contacts}
         hideForm={hideForm}
         setHideForm={setHideForm}
+        setSelectedContact={setSelectedContact}
       />
       <main>
         {!hideForm && <CreateContactForm
           setNewContactSubmitted={setNewContactSubmitted}
           contacts={contacts}
-          setContacts={setContacts}
-        />
-      }</main>
+          setHideForm={setHideForm}
+        />}
+
+        {hideForm && selectedContact && <ViewSelectedContact
+          selectedContact={selectedContact}
+        />}
+      </main>
     </>
   );
 }

@@ -1,29 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
-function CreateContactForm(props) {
+function CreateContactForm({ contacts, setNewContactSubmitted, setHideForm }) {
 
-  const { contacts, setContacts, setNewContactSubmitted } = props
-
-  const findEmptyId = () => {
-    let foundEmptyId = false
-    let iteration = 0
-
-    while (!foundEmptyId) {
-      !contacts[iteration] ? foundEmptyId = true : iteration++;
-    }
-    return iteration + 1;
-  }
-
-  const initialFormState = {
+  const [formState, setFormState] = useState({
     firstName: "",
     lastName: "",
     street: "",
     city: "",
     postCode: "",
     blockContact: false
-  };
-
-  const [formState, setFormState] = useState(initialFormState)
+  })
 
   const handleChange = (event) => {
     setFormState((previousForm) => ({
@@ -39,41 +25,37 @@ function CreateContactForm(props) {
     }));
   };
 
-  const postContact = async (newContact) => {
-    await fetch("http://localhost:3000/contacts", {
+  const postData = async(fetchAddress, data) => {
+    await fetch(`http://localhost:3000/${fetchAddress}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(newContact),
-    });
-  };
-
-  const postAddress = async (newAddress) => {
-    await fetch("http://localhost:3000/addresses", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newAddress),
+      body: JSON.stringify(data),
     });
   };
   
   const handleData = async (newContact, newAddress) => {
-    await postContact(newContact)
-    await postAddress(newAddress)
-    const fetchData = async () => {
-      const result = await fetch("http://localhost:3000/contacts")
-      const data = await result.json()
-      setContacts(data)
-    }
-    await fetchData()
-    //setNewContactSubmitted(true)
+    await postData("contacts", newContact)
+    await postData("addresses", newAddress)
+    setHideForm(true)
+    setNewContactSubmitted(true)
   }
   
+  const findEmptyId = () => {
+    let foundEmptyId = false
+    let iteration = 1
+
+    while (!foundEmptyId) {
+      contacts.some(e => e.id == iteration) ? iteration++ : foundEmptyId = true;
+    }
+    return iteration;
+  }
+
   const handleSubmit = () => {
     event.preventDefault()
     const contactId = findEmptyId()
+
     const newContact = {
       id: contactId,
       firstName: formState.firstName,
