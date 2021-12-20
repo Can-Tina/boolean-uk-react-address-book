@@ -35,11 +35,11 @@ function CreateContactForm({ contacts, setNewContactSubmitted, setHideForm }) {
     });
   };
   
-  const handleData = async (newContact, newAddress) => {
+  const handleData = async (newContact, newAddress, contactId) => {
     await postData("contacts", newContact)
     await postData("addresses", newAddress)
     setHideForm(true)
-    setNewContactSubmitted(true)
+    setNewContactSubmitted({id: contactId})
   }
   
   const findEmptyId = () => {
@@ -71,7 +71,7 @@ function CreateContactForm({ contacts, setNewContactSubmitted, setHideForm }) {
       postCode: formState.postCode
     }
 
-    handleData(newContact, newAddress)
+    handleData(newContact, newAddress, contactId)
   }
 
   
