@@ -153,3 +153,7 @@ h2 {
 .blocked {
     color: rgba(255, 0, 0, 0.5);
 }
+
+.deleteBut {
+    color: rgb(255, 0, 0);
+}

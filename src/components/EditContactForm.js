@@ -4,6 +4,8 @@ function EditContactForm({
   setNewContactSubmitted,
   setHideForm,
   contactToEdit,
+  setSelectedContact,
+  fetchContactData
 }) {
   const [formState, setFormState] = useState({});
 
@@ -32,19 +34,24 @@ function EditContactForm({
     }));
   };
 
-  const postData = async(fetchAddress, data) => {
-    await fetch(`http://localhost:3000/${fetchAddress}/${contactToEdit.id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
+  const fetchData = async(fetchAddress, fetchMethod, data) => {
+
+    const fetchOptions = fetchMethod == "PATCH"
+        ? {
+            method: "PATCH",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(data)
+          }
+        : {
+            method: "DELETE"
+          };
+
+    await fetch(`http://localhost:3000/${fetchAddress}/${contactToEdit.id}`, fetchOptions)
   };
 
   const handleData = async (newContact, newAddress) => {
-    await postData("contacts", newContact)
-    await postData("addresses", newAddress)
+    await fetchData("contacts", "PATCH", newContact)
+    await fetchData("addresses", "PATCH", newAddress)
     setHideForm(true)
     setNewContactSubmitted(contactToEdit)
   }
@@ -68,6 +75,15 @@ function EditContactForm({
     }
 
     handleData(newContact, newAddress)
+  }
+
+  const handleDelete = async() => {
+      event.preventDefault()
+      await fetchData("contacts", "DELETE", null)
+      await fetchData("addresses", "DELETE", null)
+      setHideForm(true)
+      setSelectedContact(null)
+      fetchContactData()
   }
 
   return (
@@ -136,6 +152,9 @@ function EditContactForm({
       <div className="actions-section">
         <button className="button blue" type="submit">
           Update
+        </button>
+        <button className="button blue deleteBut" onClick={() => handleDelete()}>
+          Delete
         </button>
       </div>
     </form>

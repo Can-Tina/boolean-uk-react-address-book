@@ -4,7 +4,6 @@ import CreateContactForm from "./components/CreateContactForm";
 import ViewSelectedContact from "./components/SelectedContact";
 import EditContactForm from "./components/EditContactForm"
 import "./styles/styles.css";
-import { unmountComponentAtNode } from "react-dom";
 
 export default function App() {
   const [contacts, setContacts] = useState([]);
@@ -13,14 +12,14 @@ export default function App() {
   const [selectedContact, setSelectedContact] = useState(null)
   const [contactToEdit, setContactToEdit] = useState(null)
 
-  const fetchData = async() => {
+  const fetchContactData = async() => {
     const result = await fetch("http://localhost:3000/contacts")
     const data = await result.json()
     setContacts(data)
   }
 
   useEffect(() => {
-    fetchData()
+    fetchContactData()
   }, [newContactSubmitted])
 
   useEffect(() => {
@@ -53,6 +52,8 @@ export default function App() {
             setNewContactSubmitted={setNewContactSubmitted}
             setHideForm={setHideForm}
             contactToEdit={contactToEdit}
+            setSelectedContact={setSelectedContact}
+            fetchContactData={fetchContactData}
         />}
 
         {hideForm && selectedContact && <ViewSelectedContact
